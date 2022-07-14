@@ -200,4 +200,37 @@ class ApiService
         }
         return $interestData;
     }
+
+    /**
+     * @param array $settings
+     * @param array $recipients
+     * @param string $type
+     * @return string
+     */
+    protected function addCampaign($recipients = [], $settings = [], $type = 'regular')
+    {
+        $response = $this->api->post('campaigns', [$type => $type, $recipients => $recipients, $settings = $settings]);
+        return $response['id'];
+    }
+
+    /**
+     * @param string $campaignId
+     * @param string $html
+     * @param string $plaintext
+     * @param array $template
+     * @return void
+     */
+    protected function setCampaignContent(string $campaignId, $html = '', $plaintext = '', $template = null)
+    {
+        $this->api->put('campaigns/' . $campaignId . '/content', ['html' => $html, 'plain_text' => $plaintext, 'template' => $template]);
+    }
+
+    /**
+     * @param string $campaignId
+     * @return void
+     */
+    protected function sendCampaign(string $campaignId)
+    {
+        $this->api->post('campaigns/' . $campaignId . '/actions/send');
+    }
 }
