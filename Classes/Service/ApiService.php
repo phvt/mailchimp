@@ -209,7 +209,7 @@ class ApiService
      */
     protected function addCampaign($recipients = [], $settings = [], $type = 'regular')
     {
-        $response = $this->api->post('campaigns', [$type => $type, $recipients => $recipients, $settings = $settings]);
+        $response = $this->api->post('campaigns', [$type => $type, $recipients => $recipients, $settings => $settings]);
         return $response['id'];
     }
 
