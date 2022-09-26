@@ -74,7 +74,7 @@ class MailchimpFinisher extends AbstractFinisher
     public function getCategories()
     {
         return $this->getApiService($this->options['api_key'])->getCategories(
-            $this->options['list_id'], 
+            $this->options['list_id'],
             $this->options['interest_id']
         );
     }

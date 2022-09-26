@@ -202,15 +202,15 @@ class ApiService
     }
 
     /**
-     * @param array $settings
      * @param array $recipients
+     * @param array $settings
      * @param string $type
-     * @return string
+     * @return string ID of the newly create campaign
      */
-    protected function addCampaign($recipients = [], $settings = [], $type = 'regular')
+    public function addCampaign($recipients = [], $settings = [], $type = 'regular')
     {
-        $response = $this->api->post('campaigns', [$type => $type, $recipients => $recipients, $settings => $settings]);
-        return $response['id'];
+        $response = $this->api->post('campaigns', ['type' => $type, 'recipients' => $recipients, 'settings' => (object)$settings]);
+        return $response['id'] ?? false;
     }
 
     /**
@@ -220,7 +220,7 @@ class ApiService
      * @param array $template
      * @return void
      */
-    protected function setCampaignContent(string $campaignId, $html = '', $plaintext = '', $template = null)
+    public function setCampaignContent(string $campaignId, $html = '', $plaintext = '', $template = null)
     {
         $this->api->put('campaigns/' . $campaignId . '/content', ['html' => $html, 'plain_text' => $plaintext, 'template' => $template]);
     }
@@ -229,7 +229,7 @@ class ApiService
      * @param string $campaignId
      * @return void
      */
-    protected function sendCampaign(string $campaignId)
+    public function sendCampaign(string $campaignId)
     {
         $this->api->post('campaigns/' . $campaignId . '/actions/send');
     }
