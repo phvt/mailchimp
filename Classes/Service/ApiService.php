@@ -222,7 +222,7 @@ class ApiService
      */
     public function setCampaignContent(string $campaignId, $html = '', $plaintext = '', $template = null)
     {
-        $this->api->put('campaigns/' . $campaignId . '/content', ['html' => $html, 'plain_text' => $plaintext, 'template' => $template]);
+        $this->api->put('campaigns/' . $campaignId . '/content', ['html' => $html, 'plain_text' => $plaintext] + ($template ? ['template' => $template] : []));
     }
 
     /**
