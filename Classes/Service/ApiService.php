@@ -240,27 +240,36 @@ class ApiService
 
             if (!$checklist['is_ready']) {
                 $problems = [];
-    
+
                 foreach($checklist['items'] as $item) {
                     if ($item['type'] === 'error') {
                         $problems []= $item['details'];
                     }
                 }
-    
+
                 $this->logger->error($response['status'] . ' ' . $response['detail']);
     
                 $detail = $response['detail'];
                 $detail .= ' Problems: ' . count($problems) . '.';
                 $index = 0;
-    
+
                 foreach ($problems as $problem) {
                     $detail .= ' ' . ++$index . ': ' . $problem;
                 }
-    
+
                 throw new CampaignNotReadyException($detail);
             } else {
                 throw new GeneralException($response['detail']);
             }
         }
+    }
+
+    /**
+     * @param string $campaignId
+     * @return void
+     */
+    public function deleteCampaign(string $campaignId)
+    {
+        $response = $this->api->delete('campaigns/' . $campaignId);
     }
 }
