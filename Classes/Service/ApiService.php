@@ -5,6 +5,7 @@ namespace Sup7even\Mailchimp\Service;
 use DrewM\MailChimp\MailChimp;
 use Sup7even\Mailchimp\Domain\Model\Dto\ExtensionConfiguration;
 use Sup7even\Mailchimp\Domain\Model\Dto\FormDto;
+use Sup7even\Mailchimp\Exception\CampaignNotReadyException;
 use Sup7even\Mailchimp\Exception\GeneralException;
 use Sup7even\Mailchimp\Exception\MemberExistsException;
 use TYPO3\CMS\Core\Log\Logger;
@@ -231,6 +232,35 @@ class ApiService
      */
     public function sendCampaign(string $campaignId)
     {
-        $this->api->post('campaigns/' . $campaignId . '/actions/send');
+        $response = $this->api->post('campaigns/' . $campaignId . '/actions/send');
+
+        if ($response['status'] === 400 || $response['status'] === 401 || $response['status'] === 404) {
+
+            $checklist = $this->api->get('campaigns/' . $campaignId . '/send-checklist');
+
+            if (!$checklist['is_ready']) {
+                $problems = [];
+    
+                foreach($checklist['items'] as $item) {
+                    if ($item['type'] === 'error') {
+                        $problems []= $item['details'];
+                    }
+                }
+    
+                $this->logger->error($response['status'] . ' ' . $response['detail']);
+    
+                $detail = $response['detail'];
+                $detail .= ' Problems: ' . count($problems) . '.';
+                $index = 0;
+    
+                foreach ($problems as $problem) {
+                    $detail .= ' ' . ++$index . ': ' . $problem;
+                }
+    
+                throw new CampaignNotReadyException($detail);
+            } else {
+                throw new GeneralException($response['detail']);
+            }
+        }
     }
 }
