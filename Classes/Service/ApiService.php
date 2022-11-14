@@ -105,7 +105,7 @@ class ApiService
             'type' => $groupData['type']
         ];
 
-        $list = $this->api->get('lists/' . $listId . '/interest-categories/' . $interestId . '/interests');
+        $list = $this->api->get('lists/' . $listId . '/interest-categories/' . $interestId . '/interests', ['count' => 100]);
         if (isset($list['interests']) && is_array($list['interests'])) {
             foreach ($list['interests'] as $group) {
                 $result['options'][$group['id']] = $group['name'];
