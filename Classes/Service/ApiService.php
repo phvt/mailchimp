@@ -272,4 +272,27 @@ class ApiService
     {
         $response = $this->api->delete('campaigns/' . $campaignId);
     }
+
+    public function addSegment(string $listId, string $name = '', array $conditions = [])
+    {
+        $response = $this->api->post('lists/' . $listId . '/segments', ['name' => $name, 'options' => ['match' => 'any', 'conditions' => $conditions]]);
+
+        if ($response['status'] === 400 || $response['status'] === 401 || $response['status'] === 404) {
+            throw new GeneralException($response['detail']);
+        }
+
+        return $response['id'] ?? false;
+    }
+
+    public function deleteSegment(string $listId, string $segmentId)
+    {
+        $response = $this->api->delete('lists/' . $listId . '/segments/' .  $segmentId);
+        return $response['id'] ?? false;
+    }
+
+    public function getSegmentMembers(string $listId, string $segmentId)
+    {
+        $response = $this->api->get('lists/' . $listId . '/segments/' . $segmentId . '/members?count=100');
+        return $response['members'];
+    }
 }
