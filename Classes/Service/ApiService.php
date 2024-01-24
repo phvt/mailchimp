@@ -18,7 +18,7 @@ class ApiService
     /** @var MailChimp */
     protected $api;
 
-    /** @var $logger Logger */
+    /** @var Logger $logger */
     protected $logger;
 
     /** @var string */
@@ -211,6 +211,12 @@ class ApiService
     public function addCampaign($recipients = [], $settings = [], $type = 'regular')
     {
         $response = $this->api->post('campaigns', ['type' => $type, 'recipients' => $recipients, 'settings' => (object)$settings]);
+        if ($response['errors'] ?? false) {
+            foreach($response['errors'] as $error) {
+                $this->logger->error($error['field'] . ': ' . $error['message']);
+            }
+        }
+
         return $response['id'] ?? false;
     }
 
@@ -234,7 +240,7 @@ class ApiService
     {
         $response = $this->api->post('campaigns/' . $campaignId . '/actions/send');
 
-        if ($response['status'] === 400 || $response['status'] === 401 || $response['status'] === 404) {
+        if (($response['status'] ?? false) &&  ($response['status'] === 400 || $response['status'] === 401 || $response['status'] === 404)) {
 
             $checklist = $this->api->get('campaigns/' . $campaignId . '/send-checklist');
 
@@ -248,7 +254,7 @@ class ApiService
                 }
 
                 $this->logger->error($response['status'] . ' ' . $response['detail']);
-    
+
                 $detail = $response['detail'];
                 $detail .= ' Problems: ' . count($problems) . '.';
                 $index = 0;
