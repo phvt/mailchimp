@@ -3,32 +3,26 @@
 namespace Sup7even\Mailchimp\Service;
 
 use DrewM\MailChimp\MailChimp;
+use Psr\Log\LoggerInterface;
 use Sup7even\Mailchimp\Domain\Model\Dto\ExtensionConfiguration;
 use Sup7even\Mailchimp\Domain\Model\Dto\FormDto;
 use Sup7even\Mailchimp\Exception\CampaignNotReadyException;
 use Sup7even\Mailchimp\Exception\GeneralException;
 use Sup7even\Mailchimp\Exception\MemberExistsException;
-use TYPO3\CMS\Core\Log\Logger;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class ApiService
 {
-    /** @var MailChimp */
-    protected $api;
-
-    /** @var Logger $logger */
-    protected $logger;
-
-    /** @var string */
-    protected $apiKey = '';
+    protected MailChimp $api;
+    protected LoggerInterface $logger;
+    protected string $apiKey = '';
 
     public function __construct($usedApiKeyHash = null)
     {
         require_once(ExtensionManagementUtility::extPath('mailchimp', 'Resources/Private/Contrib/MailChimp/MailChimp.php'));
 
-        /** @var ExtensionConfiguration $extensionConfiguration */
         $extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class);
         $this->apiKey = $usedApiKeyHash ? $extensionConfiguration->getApiKeyByHash($usedApiKeyHash) : $extensionConfiguration->getFirstApiKey();
         $curlProxy = $extensionConfiguration->getProxy();
@@ -41,7 +35,7 @@ class ApiService
         $this->logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
     }
 
-    public function getApiKey()
+    public function getApiKey(): string
     {
         return $this->apiKey;
     }
@@ -50,9 +44,8 @@ class ApiService
      * Get all lists
      *
      * @param int $maxCount max lists to be returned
-     * @return array
      */
-    public function getLists($maxCount = 50)
+    public function getLists(int $maxCount = 50): array
     {
         $groups = [];
         $list = $this->api->get('lists', ['count' => $maxCount]);
@@ -66,7 +59,6 @@ class ApiService
     }
 
     /**
-     * @param string $list
      * @return array|false
      */
     public function getList(string $list)
@@ -77,7 +69,6 @@ class ApiService
     /**
      * Get all interest groups of a given list
      *
-     * @param string $listId
      * @return array
      */
     public function getInterestLists(string $listId)
@@ -93,16 +84,13 @@ class ApiService
 
     /**
      * Get all interest categories of a given list & interest
-     * @param string $listId
-     * @param string $interestId
-     * @return array
      */
-    public function getCategories(string $listId, string $interestId)
+    public function getCategories(string $listId, string $interestId): array
     {
         $groupData = $this->api->get('lists/' . $listId . '/interest-categories/' . $interestId . '/');
         $result = [
             'title' => $groupData['title'],
-            'type' => $groupData['type']
+            'type' => $groupData['type'],
         ];
 
         $list = $this->api->get('lists/' . $listId . '/interest-categories/' . $interestId . '/interests', ['count' => 100]);
@@ -116,14 +104,10 @@ class ApiService
 
     /**
      * Register a user
-     *
-     * @param string $listId
-     * @param FormDto $form
-     * @param bool $doubleOptIn
      * @throws GeneralException
      * @throws MemberExistsException
      */
-    public function register(string $listId, FormDto $form, bool $doubleOptIn = true)
+    public function register(string $listId, FormDto $form, bool $doubleOptIn = true): void
     {
         $data = $this->getRegistrationData($listId, $form, $doubleOptIn);
         $response = $this->api->post("lists/$listId/members", $data);
@@ -144,13 +128,7 @@ class ApiService
         }
     }
 
-    /**
-     * @param string $listId
-     * @param FormDto $form
-     * @param bool $doubleOptIn
-     * @return array
-     */
-    protected function getRegistrationData(string $listId, FormDto $form, bool $doubleOptIn)
+    protected function getRegistrationData(string $listId, FormDto $form, bool $doubleOptIn): array
     {
         $data = [
             'email_address' => $form->getEmail(),
@@ -158,7 +136,7 @@ class ApiService
             'merge_fields' => [
                 'FNAME' => (!empty($form->getFirstName())) ? $form->getFirstName() : '',
                 'LNAME' => (!empty($form->getLastName())) ? $form->getLastName() : '',
-            ]
+            ],
         ];
         $interestData = $this->getInterests($form);
         if ($interestData) {
@@ -169,7 +147,7 @@ class ApiService
             $_params = [
                 'data' => &$data,
                 'listId' => $listId,
-                'form' => $form
+                'form' => $form,
             ];
             foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['mailchimp']['memberData'] as $funcName) {
                 GeneralUtility::callUserFunction($funcName, $_params, $this);
@@ -178,11 +156,7 @@ class ApiService
         return $data;
     }
 
-    /**
-     * @param FormDto $form
-     * @return array
-     */
-    protected function getInterests(FormDto $form)
+    protected function getInterests(FormDto $form): array
     {
         $interestData = [];
         // multi interests
