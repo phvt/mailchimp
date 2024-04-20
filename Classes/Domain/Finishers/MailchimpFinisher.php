@@ -55,6 +55,7 @@ class MailchimpFinisher extends AbstractFinisher
         if ($this->parseOption('skip_double_optin') == 1) {
             $doublOptIn = false;
         }
+
         try {
             $apiService = $this->getApiService($this->parseOption('api_key') ?? '');
             $apiService->register($listId, $form, $doublOptIn);

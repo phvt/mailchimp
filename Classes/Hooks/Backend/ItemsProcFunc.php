@@ -20,7 +20,7 @@ class ItemsProcFunc
     }
 
     /**
-     * Get API keys and its labels
+     * Get API keys and its labels.
      *
      * @throws ApiKeyMissingException
      */
@@ -40,8 +40,9 @@ class ItemsProcFunc
     public function getLists(array &$config): void
     {
         $apiKeyHash = null;
+
         try {
-            $elementId = (int)$config['row']['uid'];
+            $elementId = (int) $config['row']['uid'];
             if ($elementId > 0) {
                 $settings = $this->extractSettingsFromRecord($elementId);
                 $settings['apiKey'] = $settings['apiKey'] ?? $settings['finishers']['Mailchimp']['api_key'] ?? null;
@@ -61,7 +62,7 @@ class ItemsProcFunc
 
     public function getInterests(array &$config): void
     {
-        $elementId = (int)$config['row']['uid'];
+        $elementId = (int) $config['row']['uid'];
         if ($elementId > 0) {
             $settings = $this->extractSettingsFromRecord($elementId);
             $settings['listId'] = $settings['listId'] ?? $settings['finishers']['Mailchimp']['list_id'] ?? null;
@@ -84,7 +85,7 @@ class ItemsProcFunc
     }
 
     /**
-     * Get settings from given content element uid
+     * Get settings from given content element uid.
      */
     private function extractSettingsFromRecord(int $elementId): array
     {
@@ -94,11 +95,13 @@ class ItemsProcFunc
         if (!isset($settings['settings'])) {
             return [];
         }
+
         return $settings['settings'];
     }
 
     /**
      * @param string|null $hash
+     *
      * @return ApiService
      */
     private function getApiService(string $hash = null)
