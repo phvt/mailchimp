@@ -65,7 +65,8 @@ class MailchimpFinisher extends AbstractFinisher
         }
 
         $view->assignMultiple([
-            'form' => $form
+            'form' => $form,
+            'doubleOptIn' => $doublOptIn,
         ]);
 
         return $view->render();

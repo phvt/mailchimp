@@ -8,7 +8,9 @@
     <f:else>
         <div class="alert alert-success">
             <h3><f:translate key="success.title"/></h3>
-            <f:translate key="success.description"/>
+            <f:if condition="{doubleOptIn}">
+                <f:translate key="success.description"/>
+            </f:if>
         </div>
     </f:else>
 </f:if>
