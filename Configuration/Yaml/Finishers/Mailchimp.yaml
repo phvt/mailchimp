@@ -51,8 +51,9 @@ TYPO3:
                       type: select
                       renderType: selectSingle
                       items:
-                        10:
-                          -
+                        -
+                          key: ---
+                          label: ---
                       itemsProcFunc:
                         'Sup7even\Mailchimp\Hooks\Backend\ItemsProcFunc->getApiKeys'
                   list_id:
@@ -62,8 +63,9 @@ TYPO3:
                       type: select
                       renderType: selectSingle
                       items:
-                        10:
-                          -
+                        -
+                          key: ---
+                          label: ---
                       itemsProcFunc:
                         'Sup7even\Mailchimp\Hooks\Backend\ItemsProcFunc->getLists'
                   interest_id:
@@ -72,8 +74,9 @@ TYPO3:
                       type: select
                       renderType: selectSingle
                       items:
-                        10:
-                          -
+                        -
+                          key: ---
+                          label: ---
                       itemsProcFunc:
                         'Sup7even\Mailchimp\Hooks\Backend\ItemsProcFunc->getInterests'
                   interests:
