@@ -8,6 +8,7 @@ use Sup7even\Mailchimp\Exception\GeneralException;
 use Sup7even\Mailchimp\Exception\MemberExistsException;
 use Sup7even\Mailchimp\Service\ApiService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\StringUtility;
 use TYPO3\CMS\Extbase\Annotation\IgnoreValidation;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 
@@ -17,12 +18,12 @@ class FormController extends ActionController
      * @param FormDto|null $form
      * @IgnoreValidation("form")
      */
-    public function indexAction(FormDto $form = null): ResponseInterface
+    public function indexAction(?FormDto $form = null): ResponseInterface
     {
         if ($form === null) {
             /** @var FormDto $form */
             $form = new FormDto();
-            $prefill = GeneralUtility::_GP('email');
+            $prefill = (string)($this->request->getQueryParams()['id'] ?? '');
             if ($prefill) {
                 $form->setEmail($prefill);
             }
@@ -79,6 +80,8 @@ class FormController extends ActionController
             $this->view->assign('error', 'memberExists');
             $this->view->assign('exception', $e);
         } catch (GeneralException $e) {
+
+            debug($e, 'general error 23e6a792-a53a-4d72-a83e-5e4443b6cf30');
             $this->view->assign('error', 'general');
             $this->view->assign('exception', $e);
         }

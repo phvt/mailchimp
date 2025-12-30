@@ -2,6 +2,7 @@
 
 namespace Sup7even\Mailchimp\Domain\Finishers;
 
+use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Form\Domain\Finishers\AbstractFinisher;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Fluid\View\StandaloneView;
@@ -51,6 +52,9 @@ class MailchimpFinisher extends AbstractFinisher
         $templatePaths->fillDefaultsByPackageName('mailchimp');
         $templatePaths->setTemplateRootPaths($this->options['templateRootPaths']);
 
+        debug($this->getRequest(), 'getRequest 45656a48-55bf-4c95-a387-ba7c19447c1f');
+        $request = $this->getRequest();
+        $view->setRequest($request);
         $view->setTemplate($this->options['templateName']);
         $view->setTemplateRootPaths($templatePaths->getTemplateRootPaths());
 
@@ -82,5 +86,11 @@ class MailchimpFinisher extends AbstractFinisher
             $this->options['list_id'],
             $this->options['interest_id']
         );
+    }
+
+
+    private function getRequest(): ServerRequestInterface
+    {
+        return $GLOBALS['TYPO3_REQUEST'];
     }
 }

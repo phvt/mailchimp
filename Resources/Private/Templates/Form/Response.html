@@ -2,14 +2,14 @@
 <f:if condition="{error}">
     <f:then>
         <div class="alert alert-danger">
-            <f:translate key="error.{error}" default="{error}"/>
+            <f:translate key="error.{error}" default="{error}" extensionName="mailchimp"/>
         </div>
     </f:then>
     <f:else>
         <div class="alert alert-success">
-            <h3><f:translate key="success.title"/></h3>
+            <h3><f:translate key="success.title" extensionName="mailchimp"/></h3>
             <f:if condition="{doubleOptIn}">
-                <f:translate key="success.description"/>
+                <f:translate key="success.description" extensionName="mailchimp"/>
             </f:if>
         </div>
     </f:else>
