@@ -9,6 +9,7 @@ use Sup7even\Mailchimp\Domain\Model\Dto\FormDto;
 use Sup7even\Mailchimp\Service\ApiService;
 use Sup7even\Mailchimp\Exception\MemberExistsException;
 use Sup7even\Mailchimp\Exception\GeneralException;
+use TYPO3\CMS\Fluid\View\TemplatePaths;
 
 class MailchimpFinisher extends AbstractFinisher
 {
@@ -36,19 +37,22 @@ class MailchimpFinisher extends AbstractFinisher
         return $this->handleRegistration($form);
     }
 
-    private function getApiService(string $hash = null): ApiService
+    private function getApiService(?string $hash = null): ApiService
     {
         return GeneralUtility::makeInstance(ApiService::class, $hash);
     }
 
-    protected function handleRegistration(FormDto $form = null)
+    protected function handleRegistration(?FormDto $form = null)
     {
         /** @var StandaloneView */
         $view = GeneralUtility::makeInstance(StandaloneView::class);
+        $templatePaths = GeneralUtility::makeInstance(TemplatePaths::class);
+
+        $templatePaths->fillDefaultsByPackageName('mailchimp');
+        $templatePaths->setTemplateRootPaths($this->options['templateRootPaths']);
 
         $view->setTemplate($this->options['templateName']);
-        $view->getRequest()->setControllerExtensionName('mailchimp');
-        $view->getTemplatePaths()->fillFromConfigurationArray($this->options);
+        $view->setTemplateRootPaths($templatePaths->getTemplateRootPaths());
 
         $listId = $this->parseOption('list_id');
         $doublOptIn = true;
